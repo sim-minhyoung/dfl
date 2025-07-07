@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>프로듀스 163</title>
+  <title>DFL 19 인류 2.0 포럼</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -70,7 +70,7 @@
 </head>
 
 <body>
-  <h1>🌟 프로듀스 163</h1>
+  <h1>🌟 DFL 19 인류 2.0 포럼</h1>
 
   <div class="card">
     <label>이름</label>
@@ -79,36 +79,24 @@
     <label>학번</label>
     <input type="text" id="studentId">
 
-    <label>1위로 투표할 반</label>
+    <label>1위로 투표할 팀</label>
     <select id="vote1">
-      <option value="">-- 반 선택 --</option>
-      <option value="1반">1반</option>
-      <option value="2반">2반</option>
-      <option value="3반">3반</option>
-      <option value="4반">4반</option>
-      <option value="5반">5반</option>
-      <option value="6반">6반</option>
-      <option value="7반">7반</option>
-      <option value="8반">8반</option>
-    </select>
-
-    <label>2위로 투표할 반</label>
-    <select id="vote2">
-      <option value="">-- 반 선택 --</option>
-      <option value="1반">1반</option>
-      <option value="2반">2반</option>
-      <option value="3반">3반</option>
-      <option value="4반">4반</option>
-      <option value="5반">5반</option>
-      <option value="6반">6반</option>
-      <option value="7반">7반</option>
-      <option value="8반">8반</option>
+      <option value="">-- 팀 선택 --</option>
+      <option value="1팀">1팀</option>
+      <option value="2팀">2팀</option>
+      <option value="3팀">3팀</option>
+      <option value="4팀">4팀</option>
+      <option value="5팀">5팀</option>
+      <option value="6팀">6팀</option>
+      <option value="7팀">7팀</option>
+      <option value="8팀">8팀</option>
+      <option value="9팀">9팀</option>
+      <option value="10팀">10팀</option>
     </select>
 
     <button onclick="submitVote()">투표하기</button>
   </div>
 
-  <!-- 결과 확인 버튼 수정됨 -->
   <div style="text-align: center;">
     <button class="result-button" onclick="window.open('https://sim-minhyoung.github.io/dfl2/', '_blank')">
       결과 확인
@@ -120,19 +108,19 @@
       const name = document.getElementById('name').value.trim();
       const id = document.getElementById('studentId').value.trim();
       const vote1 = document.getElementById('vote1').value;
-      const vote2 = document.getElementById('vote2').value;
 
-      if (!name || !id || !vote1 || !vote2) {
+      if (!name || !id || !vote1) {
         alert("모든 정보를 입력해주세요.");
         return;
       }
 
       const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSenvQY4orVnZEtotRD-obHCT6IIgoJiZYt8wSGjs0QaDh3DbQ/viewform?usp=pp_url";
-      const url = `${baseUrl}&entry.366340186=${encodeURIComponent(name)}&entry.307269907=${encodeURIComponent(id)}&entry.1162613021=${encodeURIComponent(vote1)}&entry.1748004187=${encodeURIComponent(vote2)}`;
+      const url = `${baseUrl}&entry.366340186=${encodeURIComponent(name)}&entry.307269907=${encodeURIComponent(id)}&entry.1162613021=${encodeURIComponent(vote1)}`;
 
       window.open(url, "_blank");
-      alert(`투표가 완료되었습니다!\n1위: ${vote1}, 2위: ${vote2}`);
+      alert(`투표가 완료되었습니다!\n1위: ${vote1}`);
     }
   </script>
 </body>
 </html>
+
