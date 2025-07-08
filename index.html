@@ -123,6 +123,7 @@
       const name = document.getElementById('name').value.trim();
       const id = document.getElementById('studentId').value.trim();
       const vote1 = document.getElementById('vote1').value;
+      const vote2 = document.getElementById('vote2').value;
 
       if (!name || !id || !vote1) {
         alert("모든 정보를 입력해주세요.");
@@ -130,10 +131,10 @@
       }
 
       const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSenvQY4orVnZEtotRD-obHCT6IIgoJiZYt8wSGjs0QaDh3DbQ/viewform?usp=pp_url";
-      const url = `${baseUrl}&entry.366340186=${encodeURIComponent(name)}&entry.307269907=${encodeURIComponent(id)}&entry.1162613021=${encodeURIComponent(vote1)}`;
+      const url = `${baseUrl}&entry.366340186=${encodeURIComponent(name)}&entry.307269907=${encodeURIComponent(id)}&entry.1162613021=${encodeURIComponent(vote1)}&entry.1717503130=${encodeURIComponent(vote2)}`;
 
       window.open(url, "_blank");
-      alert(`투표가 완료되었습니다!\n1위: ${vote1}`);
+      alert(`투표가 완료되었습니다!\n1위: ${vote1}\n2위: ${vote2}`);
     }
   </script>
 </body>
