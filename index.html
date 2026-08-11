@@ -1,222 +1,412 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>금요일 귀가 카운트다운</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
 
-        body {
-            background: linear-gradient(135deg, #1e1e2f, #111119);
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+```
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont,
+            "Segoe UI", Roboto, sans-serif;
+    }
 
+    body {
+        background: linear-gradient(135deg, #1e1e2f, #111119);
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        padding: 40px 30px;
+        width: 100%;
+        max-width: 480px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .title {
+        font-size: 1.25rem;
+        color: #a0a0b8;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .target-time {
+        font-size: 0.95rem;
+        color: #ffbd59;
+        margin-bottom: 30px;
+        font-weight: 600;
+    }
+
+    .timer-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 30px;
+    }
+
+    .time-box {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 16px;
+        padding: 16px 8px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4facfe;
+        margin-bottom: 4px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .label {
+        font-size: 0.75rem;
+        color: #71718a;
+    }
+
+    .progress-container {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        height: 10px;
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+
+    .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(
+            90deg,
+            #4facfe 0%,
+            #00f2fe 100%
+        );
+        border-radius: 10px;
+        transition: width 0.5s linear;
+    }
+
+    .progress-text {
+        font-size: 0.85rem;
+        color: #8f8fbf;
+    }
+
+    .message {
+        display: none;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #00f2fe;
+        line-height: 1.5;
+        padding: 20px 0;
+    }
+
+    .sub-message {
+        font-size: 0.95rem;
+        color: #a0a0b8;
+        margin-top: 12px;
+        font-weight: 400;
+    }
+
+    @media (max-width: 400px) {
         .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 40px 30px;
-            width: 100%;
-            max-width: 480px;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .title {
-            font-size: 1.25rem;
-            color: #a0a0b8;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .target-time {
-            font-size: 0.95rem;
-            color: #ffbd59;
-            margin-bottom: 30px;
-            font-weight: 600;
+            padding: 30px 18px;
         }
 
         .timer-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-
-        .time-box {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 16px;
-            padding: 16px 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 7px;
         }
 
         .number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #4facfe;
-            margin-bottom: 4px;
-            font-variant-numeric: tabular-nums;
+            font-size: 1.6rem;
         }
 
         .label {
-            font-size: 0.75rem;
-            color: #71718a;
-            text-transform: uppercase;
+            font-size: 0.7rem;
         }
+    }
+</style>
+```
 
-        .progress-container {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            height: 10px;
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-            border-radius: 10px;
-            transition: width 1s linear;
-        }
-
-        .progress-text {
-            font-size: 0.85rem;
-            color: #8f8fbf;
-        }
-
-        .message {
-            display: none;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #00f2fe;
-            line-height: 1.4;
-            padding: 20px 0;
-        }
-    </style>
 </head>
+
 <body>
 
 <div class="card">
-    <div id="active-ui">
-        <div class="title">🏠 금요일 집 가는 날까지</div>
-        <div class="target-time" id="target-date-display">목표: 이번 주 금요일 16:00</div>
 
-        <div class="timer-grid">
-            <div class="time-box">
-                <div class="number" id="days">00</div>
-                <div class="label">일</div>
-            </div>
-            <div class="time-box">
-                <div class="number" id="hours">00</div>
-                <div class="label">시간</div>
-            </div>
-            <div class="time-box">
-                <div class="number" id="minutes">00</div>
-                <div class="label">분</div>
-            </div>
-            <div class="time-box">
-                <div class="number" id="seconds">00</div>
-                <div class="label">초</div>
-            </div>
-        </div>
+```
+<div id="active-ui">
 
-        <div class="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-        <div class="progress-text" id="progress-text">이번 주 기숙사 생활 버틴 정도 계산 중...</div>
+    <div class="title">
+        🏠 금요일 집 가는 날까지
     </div>
 
-    <div class="message" id="complete-message">
-        🥳 귀가 시간입니다!<br>집에 가서 맛있는 거 먹고 푹 쉬세요!
+    <div class="target-time" id="target-date-display">
+        목표: 계산 중...
     </div>
+
+    <div class="timer-grid">
+
+        <div class="time-box">
+            <div class="number" id="days">00</div>
+            <div class="label">일</div>
+        </div>
+
+        <div class="time-box">
+            <div class="number" id="hours">00</div>
+            <div class="label">시간</div>
+        </div>
+
+        <div class="time-box">
+            <div class="number" id="minutes">00</div>
+            <div class="label">분</div>
+        </div>
+
+        <div class="time-box">
+            <div class="number" id="seconds">00</div>
+            <div class="label">초</div>
+        </div>
+
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div class="progress-text" id="progress-text">
+        이번 주 기숙사 생활 버틴 정도 계산 중...
+    </div>
+
+</div>
+
+<div class="message" id="complete-message">
+
+    🥳 귀가 시간입니다!
+
+    <div class="sub-message">
+        집에 가서 맛있는 거 먹고<br>
+        푹 쉬세요! 🏠❤️
+    </div>
+
+</div>
+```
+
 </div>
 
 <script>
-    function getNextFriday4PM(now) {
+
+    /*
+     * 금요일 16:00을 기준으로 다음 목표 시간을 계산합니다.
+     *
+     * 금요일 16시 이전
+     * → 오늘 금요일 16시
+     *
+     * 금요일 16시 이후
+     * → 다음 주 금요일 16시
+     *
+     * 토/일
+     * → 다음 주 금요일 16시
+     */
+
+    function getTargetFriday(now) {
+
         const target = new Date(now);
-        const dayOfWeek = now.getDay(); // 0(일) ~ 6(토)
-        
-        // 오늘이 금요일이고 오후 4시 이전이면 오늘 4시가 목표
-        if (dayOfWeek === 5 && now.getHours() < 16) {
+
+        const day = now.getDay();
+        const currentHour = now.getHours();
+
+        // 금요일
+        if (day === 5) {
+
+            // 금요일 16시 이전
+            if (currentHour < 16) {
+
+                target.setHours(16, 0, 0, 0);
+
+                return target;
+            }
+
+            // 금요일 16시 이후 → 다음 주
+            target.setDate(target.getDate() + 7);
             target.setHours(16, 0, 0, 0);
-        } else {
-            // 다가오는 금요일 계산
-            let daysUntilFriday = (5 - dayOfWeek + 7) % 7;
-            if (daysUntilFriday === 0) daysUntilFriday = 7; // 금요일 오후 4시 이후면 다음주 금요일로 설정
-            
-            target.setDate(now.getDate() + daysUntilFriday);
-            target.setHours(16, 0, 0, 0);
+
+            return target;
         }
+
+        // 월~목
+        let daysUntilFriday = (5 - day + 7) % 7;
+
+        target.setDate(
+            target.getDate() + daysUntilFriday
+        );
+
+        target.setHours(16, 0, 0, 0);
+
         return target;
     }
 
-    function getPreviousMonday9AM(targetFriday) {
-        // 주간 진척도 계산용 (해당 주 월요일 등교/입사 시간 기준)
+
+    /*
+     * 목표 금요일의 월요일 09:00을 계산합니다.
+     */
+
+    function getMonday9AM(targetFriday) {
+
         const monday = new Date(targetFriday);
-        monday.setDate(targetFriday.getDate() - 4);
+
+        monday.setDate(
+            monday.getDate() - 4
+        );
+
         monday.setHours(9, 0, 0, 0);
+
         return monday;
     }
 
-    function updateTimer() {
-        const now = new Date();
-        const target = getNextFriday4PM(now);
-        const diff = target - now;
 
-        // 귀가 완료 시 처리
-        if (diff <= 0) {
-            document.getElementById('active-ui').style.display = 'none';
-            document.getElementById('complete-message').style.display = 'block';
-            return;
-        }
+    /*
+     * 날짜 표시
+     */
 
-        // 시간 단위 계산
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / (1000 * 60)) % 60);
-        const seconds = Math.floor((diff / 1000) % 60);
+    function formatTargetDate(target) {
 
-        // UI 업데이트
-        document.getElementById('days').textContent = String(days).padStart(2, '0');
-        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-
-        // 목표 날짜 표시
         const month = target.getMonth() + 1;
         const date = target.getDate();
-        document.getElementById('target-date-display').textContent = `목표: ${month}월 ${date}일(금) 16:00`;
 
-        // 주간 진척도 계산 (월요일 09:00 ~ 금요일 16:00)
-        const startOfWeek = getPreviousMonday9AM(target);
-        const totalWorkTime = target - startOfWeek;
-        const elapsedTime = now - startOfWeek;
-        
-        let progressPercent = (elapsedTime / totalWorkTime) * 100;
-        if (progressPercent < 0) progressPercent = 0;
-        if (progressPercent > 100) progressPercent = 100;
-
-        document.getElementById('progress-bar').style.width = `${progressPercent.toFixed(1)}%`;
-        document.getElementById('progress-text').textContent = `이번 주 귀가까지 ${progressPercent.toFixed(1)}% 달성!`;
+        return `목표: ${month}월 ${date}일(금) 16:00`;
     }
 
-    // 1초마다 타이머 업데이트
+
+    /*
+     * 메인 타이머
+     */
+
+    function updateTimer() {
+
+        const now = new Date();
+
+        const target = getTargetFriday(now);
+
+        const diff = target.getTime() - now.getTime();
+
+
+        // --------------------------------
+        // 남은 시간 계산
+        // --------------------------------
+
+        const days =
+            Math.floor(
+                diff / (1000 * 60 * 60 * 24)
+            );
+
+        const hours =
+            Math.floor(
+                (diff / (1000 * 60 * 60)) % 24
+            );
+
+        const minutes =
+            Math.floor(
+                (diff / (1000 * 60)) % 60
+            );
+
+        const seconds =
+            Math.floor(
+                (diff / 1000) % 60
+            );
+
+
+        // --------------------------------
+        // 화면 표시
+        // --------------------------------
+
+        document.getElementById("days").textContent =
+            String(days).padStart(2, "0");
+
+        document.getElementById("hours").textContent =
+            String(hours).padStart(2, "0");
+
+        document.getElementById("minutes").textContent =
+            String(minutes).padStart(2, "0");
+
+        document.getElementById("seconds").textContent =
+            String(seconds).padStart(2, "0");
+
+
+        // 목표 날짜
+
+        document.getElementById(
+            "target-date-display"
+        ).textContent = formatTargetDate(target);
+
+
+        // --------------------------------
+        // 이번 주 진행률
+        // --------------------------------
+
+        const monday = getMonday9AM(target);
+
+        const totalTime =
+            target.getTime() - monday.getTime();
+
+        const elapsedTime =
+            now.getTime() - monday.getTime();
+
+
+        let progress =
+            (elapsedTime / totalTime) * 100;
+
+
+        // 0~100% 범위로 제한
+
+        progress =
+            Math.max(
+                0,
+                Math.min(100, progress)
+            );
+
+
+        document.getElementById(
+            "progress-bar"
+        ).style.width = `${progress}%`;
+
+
+        document.getElementById(
+            "progress-text"
+        ).textContent =
+            `이번 주 귀가까지 ${progress.toFixed(1)}% 달성!`;
+    }
+
+
+    /*
+     * 초기 실행
+     */
+
     updateTimer();
-    setInterval(updateTimer, 1000);
+
+
+    /*
+     * 1초마다 갱신
+     */
+
+    setInterval(
+        updateTimer,
+        1000
+    );
+
 </script>
 
 </body>
