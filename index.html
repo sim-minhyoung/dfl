@@ -1,142 +1,223 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>DFL 19 인류 2.0 포럼</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #ecf0f1;
-      padding: 40px 20px;
-      margin: 0;
-    }
-    h1 {
-      text-align: center;
-      color: #00ffe7;
-      text-shadow: 0 0 10px #00ffe7;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.05);
-      max-width: 500px;
-      margin: 20px auto;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-    }
-    label {
-      font-weight: 600;
-      display: block;
-      margin: 15px 0 5px;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      border: 1px solid #555;
-      background-color: #1f2a36;
-      color: #fff;
-      font-size: 16px;
-    }
-    button {
-      background-color: #00c9ff;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 0 8px #00c9ff;
-    }
-    button:hover {
-      background-color: #007c9a;
-      transform: scale(1.03);
-    }
-    .result-button {
-      margin-top: 30px;
-      padding: 15px 30px;
-      background-color: #00c9ff;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 18px;
-      cursor: pointer;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    }
-    .result-button:hover {
-      background-color: #007c9a;
-      transform: scale(1.05);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>금요일 귀가 카운트다운</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1e2f, #111119);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .title {
+            font-size: 1.25rem;
+            color: #a0a0b8;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .target-time {
+            font-size: 0.95rem;
+            color: #ffbd59;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .timer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .time-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 16px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4facfe;
+            margin-bottom: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .label {
+            font-size: 0.75rem;
+            color: #71718a;
+            text-transform: uppercase;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 10px;
+            transition: width 1s linear;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: #8f8fbf;
+        }
+
+        .message {
+            display: none;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00f2fe;
+            line-height: 1.4;
+            padding: 20px 0;
+        }
+    </style>
 </head>
-
 <body>
-  <h1>🌟 DFL 19 인류 2.0 포럼</h1>
 
-  <div class="card">
-    <label>이름</label>
-    <input type="text" id="name">
+<div class="card">
+    <div id="active-ui">
+        <div class="title">🏠 금요일 집 가는 날까지</div>
+        <div class="target-time" id="target-date-display">목표: 이번 주 금요일 16:00</div>
 
-    <label>학번</label>
-    <input type="text" id="studentId">
+        <div class="timer-grid">
+            <div class="time-box">
+                <div class="number" id="days">00</div>
+                <div class="label">일</div>
+            </div>
+            <div class="time-box">
+                <div class="number" id="hours">00</div>
+                <div class="label">시간</div>
+            </div>
+            <div class="time-box">
+                <div class="number" id="minutes">00</div>
+                <div class="label">분</div>
+            </div>
+            <div class="time-box">
+                <div class="number" id="seconds">00</div>
+                <div class="label">초</div>
+            </div>
+        </div>
 
-    <label>1위로 투표할 팀</label>
-    <select id="vote1">
-      <option value="">-- 팀 선택 --</option>
-      <option value="1팀(AI로 여는 부의시대)">1팀(AI로 여는 부의시대)</option>
-      <option value="2팀(경어차이와 생성AI)">2팀(경어차이와 생성AI)</option>
-      <option value="3팀(AI와 모의재판 실험)">3팀(AI와 모의재판 실험)</option>
-      <option value="4팀(AI신앙과 믿음의 변화)">4팀(AI신앙과 믿음의 변화)</option>
-      <option value="5팀(경계 흐려진 인간과 기계)">5팀(경계 흐려진 인간과 기계)</option>
-      <option value="6팀(AI문학과 환각의 재구성)">6팀(AI문학과 환각의 재구성)</option>
-      <option value="7팀(언어 잃은 인간의 미래)">7팀(언어 잃은 인간의 미래)</option>
-      <option value="8팀(장애인과 AI의 공존사회)">8팀(장애인과 AI의 공존사회)</option>
-      <option value="9팀(감정 인터페이스의 시대)">9팀(감정 인터페이스의 시대)</option>
-      <option value="10팀(기술사회와 인간의 태도)">10팀(기술사회와 인간의 태도)</option>
-    </select>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="progress-text" id="progress-text">이번 주 기숙사 생활 버틴 정도 계산 중...</div>
+    </div>
 
-    <label>2위로 투표할 팀</label>
-    <select id="vote2">
-      <option value="">-- 팀 선택 --</option>
-      <option value="1팀(AI로 여는 부의시대)">1팀(AI로 여는 부의시대)</option>
-      <option value="2팀(경어차이와 생성AI)">2팀(경어차이와 생성AI)</option>
-      <option value="3팀(AI와 모의재판 실험)">3팀(AI와 모의재판 실험)</option>
-      <option value="4팀(AI신앙과 믿음의 변화)">4팀(AI신앙과 믿음의 변화)</option>
-      <option value="5팀(경계 흐려진 인간과 기계)">5팀(경계 흐려진 인간과 기계)</option>
-      <option value="6팀(AI문학과 환각의 재구성)">6팀(AI문학과 환각의 재구성)</option>
-      <option value="7팀(언어 잃은 인간의 미래)">7팀(언어 잃은 인간의 미래)</option>
-      <option value="8팀(장애인과 AI의 공존사회)">8팀(장애인과 AI의 공존사회)</option>
-      <option value="9팀(감정 인터페이스의 시대)">9팀(감정 인터페이스의 시대)</option>
-      <option value="10팀(기술사회와 인간의 태도)">10팀(기술사회와 인간의 태도)</option>
-    </select>
+    <div class="message" id="complete-message">
+        🥳 귀가 시간입니다!<br>집에 가서 맛있는 거 먹고 푹 쉬세요!
+    </div>
+</div>
 
-    <button onclick="submitVote()">투표하기</button>
-  </div>
-
-  <div style="text-align: center;">
-    <button class="result-button" onclick="window.open('https://sim-minhyoung.github.io/dfl2/', '_blank')">
-      결과 확인
-    </button>
-  </div>
-
-  <script>
-    function submitVote() {
-      const name = document.getElementById('name').value.trim();
-      const id = document.getElementById('studentId').value.trim();
-      const vote1 = document.getElementById('vote1').value;
-      const vote2 = document.getElementById('vote2').value;
-
-      if (!name || !id || !vote1) {
-        alert("모든 정보를 입력해주세요.");
-        return;
-      }
-
-      const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSenvQY4orVnZEtotRD-obHCT6IIgoJiZYt8wSGjs0QaDh3DbQ/viewform?usp=pp_url";
-      const url = `${baseUrl}&entry.366340186=${encodeURIComponent(name)}&entry.307269907=${encodeURIComponent(id)}&entry.1162613021=${encodeURIComponent(vote1)}&entry.1717503130=${encodeURIComponent(vote2)}`;
-
-      window.open(url, "_blank");
-      alert(`투표가 완료되었습니다!\n1위: ${vote1}\n2위: ${vote2}`);
+<script>
+    function getNextFriday4PM(now) {
+        const target = new Date(now);
+        const dayOfWeek = now.getDay(); // 0(일) ~ 6(토)
+        
+        // 오늘이 금요일이고 오후 4시 이전이면 오늘 4시가 목표
+        if (dayOfWeek === 5 && now.getHours() < 16) {
+            target.setHours(16, 0, 0, 0);
+        } else {
+            // 다가오는 금요일 계산
+            let daysUntilFriday = (5 - dayOfWeek + 7) % 7;
+            if (daysUntilFriday === 0) daysUntilFriday = 7; // 금요일 오후 4시 이후면 다음주 금요일로 설정
+            
+            target.setDate(now.getDate() + daysUntilFriday);
+            target.setHours(16, 0, 0, 0);
+        }
+        return target;
     }
-  </script>
+
+    function getPreviousMonday9AM(targetFriday) {
+        // 주간 진척도 계산용 (해당 주 월요일 등교/입사 시간 기준)
+        const monday = new Date(targetFriday);
+        monday.setDate(targetFriday.getDate() - 4);
+        monday.setHours(9, 0, 0, 0);
+        return monday;
+    }
+
+    function updateTimer() {
+        const now = new Date();
+        const target = getNextFriday4PM(now);
+        const diff = target - now;
+
+        // 귀가 완료 시 처리
+        if (diff <= 0) {
+            document.getElementById('active-ui').style.display = 'none';
+            document.getElementById('complete-message').style.display = 'block';
+            return;
+        }
+
+        // 시간 단위 계산
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        // UI 업데이트
+        document.getElementById('days').textContent = String(days).padStart(2, '0');
+        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+        // 목표 날짜 표시
+        const month = target.getMonth() + 1;
+        const date = target.getDate();
+        document.getElementById('target-date-display').textContent = `목표: ${month}월 ${date}일(금) 16:00`;
+
+        // 주간 진척도 계산 (월요일 09:00 ~ 금요일 16:00)
+        const startOfWeek = getPreviousMonday9AM(target);
+        const totalWorkTime = target - startOfWeek;
+        const elapsedTime = now - startOfWeek;
+        
+        let progressPercent = (elapsedTime / totalWorkTime) * 100;
+        if (progressPercent < 0) progressPercent = 0;
+        if (progressPercent > 100) progressPercent = 100;
+
+        document.getElementById('progress-bar').style.width = `${progressPercent.toFixed(1)}%`;
+        document.getElementById('progress-text').textContent = `이번 주 귀가까지 ${progressPercent.toFixed(1)}% 달성!`;
+    }
+
+    // 1초마다 타이머 업데이트
+    updateTimer();
+    setInterval(updateTimer, 1000);
+</script>
+
 </body>
 </html>
-
