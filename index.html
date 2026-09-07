@@ -70,6 +70,12 @@
       flex-wrap: wrap;
       gap: 10px;
       margin: 14px 0 10px;
+      align-items: center;
+    }
+    .buttons-right {
+      margin-left: auto;
+      display: flex;
+      gap: 10px;
     }
     button {
       border: 0;
@@ -81,6 +87,7 @@
     #runBtn { background: #222; color: #fff; }
     #downloadBtn { background: #e9ebef; color: #222; }
     #submitBtn { background: #1a73e8; color: #fff; }
+    #hwpSubmitBtn { background: #0b8a3d; color: #fff; }
     button:hover { opacity: .85; }
     button:disabled { opacity: .5; cursor: not-allowed; }
     .status {
@@ -112,8 +119,74 @@
     @media (max-width: 650px) {
       .info { grid-template-columns: 1fr; }
       .buttons { flex-direction: column; }
+      .buttons-right { margin-left: 0; width: 100%; flex-direction: column; }
       button { width: 100%; }
       textarea { height: 280px; }
+    }
+
+    /* 모달 팝업 스타일 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 480px;
+      width: 100%;
+      padding: 26px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.25);
+    }
+    .modal-box h2 {
+      margin: 0 0 18px;
+      font-size: 20px;
+    }
+    .modal-field {
+      margin-bottom: 14px;
+    }
+    .modal-field label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .modal-field input[type="text"],
+    .modal-field input[type="file"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cfd3da;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .modal-hint {
+      font-size: 12px;
+      color: #777;
+      margin-top: 6px;
+    }
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .modal-buttons button {
+      flex: 1;
+    }
+    #hwpCancelBtn { background: #e9ebef; color: #222; }
+    #hwpFinalSubmitBtn { background: #0b8a3d; color: #fff; }
+    .modal-status {
+      min-height: 18px;
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -138,18 +211,49 @@
     <div class="buttons">
       <button id="runBtn" type="button">▶ 실행하기</button>
       <button id="downloadBtn" type="button">⬇ HTML 다운로드</button>
-      <button id="submitBtn" type="button">📤 제출하기</button>
+      <button id="submitBtn" type="button">📤 HTML 제출하기</button>
+      <div class="buttons-right">
+        <button id="hwpSubmitBtn" type="button">📄 한글파일 제출하기</button>
+      </div>
     </div>
     <div id="statusMsg" class="status"></div>
 
     <div class="result-title">실행 결과</div>
     <iframe id="preview" title="HTML 실행 결과" sandbox="allow-scripts allow-forms"></iframe>
-    <div class="notice">입력한 HTML은 서버에 저장하지 않고 이 브라우저에서만 실행됩니다. '제출하기'를 누르면 구글 시트와 구글 드라이브에 기록·저장됩니다.</div>
+    <div class="notice">입력한 HTML은 서버에 저장하지 않고 이 브라우저에서만 실행됩니다. 'HTML 제출하기'를 누르면 구글 시트(Sheet1)와 구글 드라이브에 기록·저장됩니다. '한글파일 제출하기'는 한글(.hwp) 또는 PDF 파일을 구글 시트2와 구글 드라이브에 저장합니다.</div>
   </main>
+
+  <!-- 한글/PDF 파일 제출용 모달 -->
+  <div class="modal-overlay" id="hwpModalOverlay">
+    <div class="modal-box">
+      <h2>📄 한글/PDF 파일 제출</h2>
+
+      <div class="modal-field">
+        <label for="hwpStudentId">학번</label>
+        <input id="hwpStudentId" type="text" placeholder="학번을 입력하세요">
+      </div>
+      <div class="modal-field">
+        <label for="hwpStudentName">이름</label>
+        <input id="hwpStudentName" type="text" placeholder="이름을 입력하세요">
+      </div>
+      <div class="modal-field">
+        <label for="hwpFileInput">파일 선택 (.hwp, .hwpx, .pdf)</label>
+        <input id="hwpFileInput" type="file" accept=".hwp,.hwpx,.pdf">
+        <div class="modal-hint">한글(.hwp/.hwpx) 또는 PDF 파일만 선택할 수 있습니다.</div>
+      </div>
+
+      <div id="hwpModalStatus" class="modal-status"></div>
+
+      <div class="modal-buttons">
+        <button id="hwpCancelBtn" type="button">취소</button>
+        <button id="hwpFinalSubmitBtn" type="button">✅ 최종 제출</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     // 구글 Apps Script 웹 앱 URL (최신 배포 URL)
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMwN6eF2w6tagtjwjPvoejSJ3mymOpemw27IxOHa39ZpPDsmOZc3ohN_Y7g5pgi-w5CQ/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyeMlUoWkgmO6uHLEH8QlTkDappuUG0oAR7-iM4ldGdDvLrV2BKYmIrJkzLnDkE3ruZmw/exec";
 
     const studentId = document.getElementById("studentId");
     const studentName = document.getElementById("studentName");
@@ -160,28 +264,57 @@
     const submitBtn = document.getElementById("submitBtn");
     const statusMsg = document.getElementById("statusMsg");
 
+    const hwpSubmitBtn = document.getElementById("hwpSubmitBtn");
+    const hwpModalOverlay = document.getElementById("hwpModalOverlay");
+    const hwpStudentId = document.getElementById("hwpStudentId");
+    const hwpStudentName = document.getElementById("hwpStudentName");
+    const hwpFileInput = document.getElementById("hwpFileInput");
+    const hwpCancelBtn = document.getElementById("hwpCancelBtn");
+    const hwpFinalSubmitBtn = document.getElementById("hwpFinalSubmitBtn");
+    const hwpModalStatus = document.getElementById("hwpModalStatus");
+
     function setStatus(text, type) {
       statusMsg.textContent = text;
       statusMsg.className = "status" + (type ? " " + type : "");
     }
 
-    function buildSafeFilename(id, name) {
+    function setModalStatus(text, type) {
+      hwpModalStatus.textContent = text;
+      hwpModalStatus.className = "modal-status" + (type ? " " + type : "");
+    }
+
+    function buildSafeFilename(id, name, ext) {
       const safeId = id.replace(/[^0-9A-Za-z가-힣_-]/g, "_");
       const safeName = name.replace(/[^0-9A-Za-z가-힣_-]/g, "_");
-      return `${safeId}_${safeName}.html`;
+      return `${safeId}_${safeName}${ext}`;
     }
 
     // 표준 base64 인코딩 (Apps Script Utilities.base64Decode 기본값과 호환)
-    function encodeHtmlAsBase64(code) {
-      const bytes = new TextEncoder().encode(code);
+    function encodeBytesAsBase64(bytes) {
       let binary = "";
       const chunkSize = 0x8000;
-
       for (let i = 0; i < bytes.length; i += chunkSize) {
         binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
       }
+      return btoa(binary);
+    }
 
-      return btoa(binary); // 표준 base64 (+, /, = 그대로 유지)
+    function encodeHtmlAsBase64(code) {
+      const bytes = new TextEncoder().encode(code);
+      return encodeBytesAsBase64(bytes);
+    }
+
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const arrayBuffer = reader.result;
+          const bytes = new Uint8Array(arrayBuffer);
+          resolve(encodeBytesAsBase64(bytes));
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsArrayBuffer(file);
+      });
     }
 
     runBtn.addEventListener("click", () => {
@@ -216,7 +349,7 @@
         return;
       }
 
-      const filename = buildSafeFilename(id, name);
+      const filename = buildSafeFilename(id, name, ".html");
       const blob = new Blob([code], { type: "text/html;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -230,6 +363,7 @@
       URL.revokeObjectURL(url);
     });
 
+    // ===== HTML 제출하기 =====
     submitBtn.addEventListener("click", async () => {
       const id = studentId.value.trim();
       const name = studentName.value.trim();
@@ -251,7 +385,7 @@
         return;
       }
 
-      const filename = buildSafeFilename(id, name);
+      const filename = buildSafeFilename(id, name, ".html");
       const fileData = encodeHtmlAsBase64(code);
 
       submitBtn.disabled = true;
@@ -261,6 +395,7 @@
 
       try {
         const payload = JSON.stringify({
+          type: "html",
           studentId: id,
           studentName: name,
           filename: filename,
@@ -276,7 +411,7 @@
           body: payload
         });
 
-        setStatus(`✅ 제출이 완료되었습니다. (구글 시트/드라이브에 기록됨) — ${id} / ${name} / ${filename}`, "ok");
+        setStatus(`✅ HTML 제출이 완료되었습니다. — ${id} / ${name} / ${filename}`, "ok");
       } catch (error) {
         console.error(error);
         setStatus("❌ 제출 중 오류가 발생했습니다. 인터넷 연결을 확인하세요.", "err");
@@ -286,10 +421,94 @@
         downloadBtn.disabled = false;
       }
     });
+
+    // ===== 한글/PDF 파일 제출 모달 열기/닫기 =====
+    hwpSubmitBtn.addEventListener("click", () => {
+      // 메인 화면의 학번/이름을 모달에 그대로 채워줌
+      hwpStudentId.value = studentId.value.trim();
+      hwpStudentName.value = studentName.value.trim();
+      hwpFileInput.value = "";
+      setModalStatus("", "");
+      hwpModalOverlay.classList.add("open");
+    });
+
+    hwpCancelBtn.addEventListener("click", () => {
+      hwpModalOverlay.classList.remove("open");
+    });
+
+    hwpModalOverlay.addEventListener("click", (e) => {
+      if (e.target === hwpModalOverlay) {
+        hwpModalOverlay.classList.remove("open");
+      }
+    });
+
+    // ===== 한글/PDF 파일 최종 제출 =====
+    hwpFinalSubmitBtn.addEventListener("click", async () => {
+      const id = hwpStudentId.value.trim();
+      const name = hwpStudentName.value.trim();
+      const file = hwpFileInput.files[0];
+
+      if (!id) {
+        alert("학번을 입력해주세요.");
+        hwpStudentId.focus();
+        return;
+      }
+      if (!name) {
+        alert("이름을 입력해주세요.");
+        hwpStudentName.focus();
+        return;
+      }
+      if (!file) {
+        alert("파일을 선택해주세요.");
+        return;
+      }
+
+      const allowedExt = [".hwp", ".hwpx", ".pdf"];
+      const lowerName = file.name.toLowerCase();
+      const ext = allowedExt.find(e => lowerName.endsWith(e));
+      if (!ext) {
+        alert("한글(.hwp, .hwpx) 또는 PDF(.pdf) 파일만 제출할 수 있습니다.");
+        return;
+      }
+
+      const filename = buildSafeFilename(id, name, ext);
+
+      hwpFinalSubmitBtn.disabled = true;
+      hwpCancelBtn.disabled = true;
+      setModalStatus(`제출 중: ${id} / ${name} / ${filename}`, "loading");
+
+      try {
+        const fileData = await readFileAsBase64(file);
+
+        const payload = JSON.stringify({
+          type: "hwp",
+          studentId: id,
+          studentName: name,
+          filename: filename,
+          fileData: fileData
+        });
+
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: payload
+        });
+
+        setModalStatus(`✅ 제출이 완료되었습니다. — ${id} / ${name} / ${filename}`, "ok");
+        setTimeout(() => {
+          hwpModalOverlay.classList.remove("open");
+        }, 1200);
+      } catch (error) {
+        console.error(error);
+        setModalStatus("❌ 제출 중 오류가 발생했습니다.", "err");
+      } finally {
+        hwpFinalSubmitBtn.disabled = false;
+        hwpCancelBtn.disabled = false;
+      }
+    });
   </script>
-</body>
-</html>
-
-
 </body>
 </html>
